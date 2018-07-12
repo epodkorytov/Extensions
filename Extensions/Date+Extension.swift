@@ -6,6 +6,11 @@
 import Foundation
 
 public extension Date {
+    public func toString(with dateFormat: String) -> String {
+        let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = dateFormat
+        return dateFormatter.string(from: self)
+    }
     
     public func compareWithDate(_ target:Date) -> Bool {
         let dateFormatter = DateFormatter()
