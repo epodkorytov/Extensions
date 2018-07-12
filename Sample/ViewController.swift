@@ -38,6 +38,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        uiLabel.padding = UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0)
+        uiLabel.text = "bhdvsfjsvdfj jdhsfbdsjhbfjs sdjhfb sdjhfb hgfhgfvhg gvhgvhgv"
+        
         let dsColor0 = DataSourceColored0()
         let dsColor1 = DataSourceColored1()
         let dsString = DataSourceString()
