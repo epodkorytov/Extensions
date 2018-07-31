@@ -12,9 +12,10 @@ public class ClosureSelector {
     public let selector : Selector
     private let closure : () -> ()
     
-    init(withClosure closure : @escaping () -> ()){
-        self.selector = #selector(ClosureSelector.target)
+    init(_ attachTo: AnyObject, closure: @escaping () -> ()) {
         self.closure = closure
+        self.selector = #selector(ClosureSelector.target)
+        objc_setAssociatedObject(attachTo, "[\(arc4random())]", self, .OBJC_ASSOCIATION_RETAIN)
     }
     
     @objc func target() {
@@ -22,30 +23,25 @@ public class ClosureSelector {
     }
 }
 
-var handle: Int = 0
-
 public extension NotificationCenter {
     public func addObserver(_ observer: Any, name: NSNotification.Name?, withClosure closure : @escaping () -> Void) {
-        let closureSelector = ClosureSelector(withClosure: closure)
-        objc_setAssociatedObject(self, &handle, closureSelector, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        let closureSelector = ClosureSelector(self, closure: closure)
+        
         self.addObserver(closureSelector, selector: closureSelector.selector, name: name, object: nil)
     }
 }
 
 public extension UIBarButtonItem {
     public func action(withClosure closure : @escaping () -> Void) {
-        let closureSelector = ClosureSelector(withClosure: closure)
-        objc_setAssociatedObject(self, &handle, closureSelector, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        
+        let closureSelector = ClosureSelector(self, closure: closure)
         self.target = closureSelector
         self.action = closureSelector.selector
     }
 }
 
 public extension UIButton {
-    public func action(for event: UIControlEvents,withClosure closure : @escaping () -> Void) {
-        let closureSelector = ClosureSelector(withClosure: closure)
-        objc_setAssociatedObject(self, &handle, closureSelector, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    public func action(for event: UIControlEvents, withClosure closure : @escaping () -> Void) {
+        let closureSelector = ClosureSelector(self, closure: closure)
         self.addTarget(closureSelector, action: closureSelector.selector, for: event)
     }
 }
