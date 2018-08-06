@@ -36,10 +36,12 @@ extension UILabel {
         var contentSize = super.intrinsicContentSize
         var textWidth: CGFloat = frame.size.width
         var insetsHeight: CGFloat = 0.0
-
+        var insetsWidth: CGFloat = 0.0
+        
         if let insets = padding {
-            textWidth += insets.left + insets.right
+            insetsWidth += insets.left + insets.right
             insetsHeight += insets.top + insets.bottom
+            textWidth -= insetsWidth
         }
 
         let newSize = text.boundingRect(with: CGSize(width: textWidth, height: CGFloat.greatestFiniteMagnitude),
@@ -47,7 +49,8 @@ extension UILabel {
                                         attributes: [NSAttributedStringKey.font: self.font], context: nil)
 
         contentSize.height = ceil(newSize.size.height) + insetsHeight
-
+        contentSize.width = ceil(newSize.size.width) + insetsWidth
+        
         return contentSize
     }
 }
