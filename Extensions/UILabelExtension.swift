@@ -38,7 +38,7 @@ extension UILabel {
         var insetsHeight: CGFloat = 0.0
 
         if let insets = padding {
-            textWidth -= insets.left + insets.right
+            textWidth += insets.left + insets.right
             insetsHeight += insets.top + insets.bottom
         }
 
