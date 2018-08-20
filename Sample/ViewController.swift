@@ -7,10 +7,6 @@
 import UIKit
 import Extensions
 
-public class DataSourceItem<T>: DataSourceBaseItem {
-    public var value: T?
-}
-
 class ViewController: UIViewController {
 
     @IBOutlet weak var uiLabel: UILabel!
@@ -37,9 +33,6 @@ class ViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        uiLabel.padding = UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0)
-        uiLabel.text = "bhdvsfjsvdfj jdhsfbdsjhbfjs sdjhfb sdjhfb hgfhgfvhg gvhgvhgv"
         
         let dsColor0 = DataSourceColored0()
         let dsColor1 = DataSourceColored1()

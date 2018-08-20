@@ -25,7 +25,7 @@ open class DataSourceBaseItem: DataSourceBaseItemProtocol {
     }
     public var didSelectionChange: DataSourceBaseItemDidSelectionChange?
     
-    public init(id: Int, title: String, selected: Bool?) {
+    public required init(id: Int, title: String, selected: Bool?) {
         self.id = id
         self.title = title
         self.selected = selected ?? false
@@ -33,10 +33,10 @@ open class DataSourceBaseItem: DataSourceBaseItemProtocol {
 }
 
 open class DataSourceItem<T>: DataSourceBaseItem {
-    public var value: T
-    public init(id: Int, title: String, value: T){
+    public var value: T?
+    public convenience init(id: Int, title: String, value: T?){
+        self.init(id: id, title: title, selected: false)
         self.value = value
-        super.init(id: id, title: title, selected: false)
     }
 }
 
