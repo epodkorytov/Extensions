@@ -40,7 +40,7 @@ public extension UIBarButtonItem {
 }
 
 public extension UIButton {
-    public func action(for event: UIControlEvents, withClosure closure : @escaping () -> Void) {
+    public func action(for event: UIControl.Event, withClosure closure : @escaping () -> Void) {
         let closureSelector = ClosureSelector(self, closure: closure)
         self.addTarget(closureSelector, action: closureSelector.selector, for: event)
     }

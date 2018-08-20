@@ -3,8 +3,6 @@
 //  Extensions
 //
 
-import Foundation
-
 public typealias DataSourceBaseItemDidSelectionChange = (Int, Bool) -> Swift.Void
 
 public protocol DataSourceBaseItemProtocol {
@@ -12,15 +10,13 @@ public protocol DataSourceBaseItemProtocol {
     var title: String { get set }
     var selected: Bool { get set }
     var didSelectionChange: DataSourceBaseItemDidSelectionChange? { get set }
-    
-    func store()
 }
 
 open class DataSourceBaseItem: DataSourceBaseItemProtocol {
     public var id: Int
     public var title: String
     
-    public var selected: Bool {
+    public var selected: Bool = false {
         didSet {
             if self.selected != oldValue {
                 self.didSelectionChange?(self.id, self.selected)
@@ -29,17 +25,19 @@ open class DataSourceBaseItem: DataSourceBaseItemProtocol {
     }
     public var didSelectionChange: DataSourceBaseItemDidSelectionChange?
     
-    public required init(id: Int, title: String, selected: Bool) {
+    public init(id: Int, title: String, selected: Bool?) {
         self.id = id
         self.title = title
-        self.selected = selected
+        self.selected = selected ?? false
     }
-    
-    public func store() { }
 }
 
 open class DataSourceItem<T>: DataSourceBaseItem {
-    public var value: T?
+    public var value: T
+    public init(id: Int, title: String, value: T){
+        self.value = value
+        super.init(id: id, title: title, selected: false)
+    }
 }
 
 //
@@ -47,6 +45,9 @@ public protocol DataSourceBaseProtocol {
     var multiselectable: Bool { get set }
     var selectedIndexes: [Int]? { get set }
     var selectedIds: [Int]? { get set }
+    
+    var didSelectionChange: DataSourceBaseItemDidSelectionChange? { get set }
+    var selectionChanged: (()-> Void)? { get set }
 }
 
 open class DataSource<T: DataSourceBaseItem>: DataSourceBaseProtocol {
@@ -73,6 +74,9 @@ open class DataSource<T: DataSourceBaseItem>: DataSourceBaseProtocol {
         }
     }
     
+    public var didSelectionChange: DataSourceBaseItemDidSelectionChange?
+    public var selectionChanged: (()-> Void)?
+    
     public var selectedItems: Array<T> { return items.filter{$0.selected} }
     
     public var selectedIndexes: [Int]? {
@@ -82,8 +86,8 @@ open class DataSource<T: DataSourceBaseItem>: DataSourceBaseProtocol {
         get {
             return items.indexes{ $0.selected }
         }
-     }
-     
+    }
+    
     public var selectedIds: [Int]? {
         set {
             self.selectItems(ids: newValue ?? [])
@@ -128,13 +132,22 @@ open class DataSource<T: DataSourceBaseItem>: DataSourceBaseProtocol {
     }
     //
     private func change(_ id: Int,  selected: Bool){
+        self.didSelectionChange?(id, selected)
         if !selected { return }
+        
+        let _selectedIds = selectedIds
+        
         items.filter({$0.id != id}).forEach({
             let didSelectionChange = $0.didSelectionChange
             $0.didSelectionChange = nil
             $0.selected = false
             $0.didSelectionChange = didSelectionChange
         })
+        
+        if _selectedIds != selectedIds {
+            selectionChanged?()
+        }
+        
     }
     
     private func selectItems(indexes: [Int]){
@@ -144,12 +157,12 @@ open class DataSource<T: DataSourceBaseItem>: DataSourceBaseProtocol {
                 value = [idx]
             }
         }
-     
+        
         for (idx, item) in self.items.enumerated(){
             item.selected = value.contains(idx)
         }
-     }
-     
+    }
+    
     func selectItems(ids:[Int]){
         var value: [Int] = ids
         if !multiselectable {
@@ -157,7 +170,7 @@ open class DataSource<T: DataSourceBaseItem>: DataSourceBaseProtocol {
                 value = [idx]
             }
         }
-     
+        
         for (_, item) in self.items.enumerated(){
             item.selected = value.contains(item.id)
         }

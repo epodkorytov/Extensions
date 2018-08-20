@@ -24,7 +24,7 @@ extension UILabel {
 
     override open func draw(_ rect: CGRect) {
         if let insets = padding {
-            self.drawText(in: UIEdgeInsetsInsetRect(rect, insets))
+            self.drawText(in: rect.inset(by: insets))
         } else {
             self.drawText(in: rect)
         }
@@ -46,7 +46,7 @@ extension UILabel {
 
         let newSize = text.boundingRect(with: CGSize(width: textWidth, height: CGFloat.greatestFiniteMagnitude),
                                         options: NSStringDrawingOptions.usesLineFragmentOrigin,
-                                        attributes: [NSAttributedStringKey.font: self.font], context: nil)
+                                        attributes: [NSAttributedString.Key.font: self.font], context: nil)
 
         contentSize.height = ceil(newSize.size.height) + insetsHeight
         contentSize.width = ceil(newSize.size.width) + insetsWidth
